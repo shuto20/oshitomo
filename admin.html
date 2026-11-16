@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>推しとも日和 管理</title>
+<link rel="icon" href="favicon.png">
+<style>
+  :root { --bg: #f8f4ec; --card: #fff; --ink: #2b2630; --sub: #8b8490; --line: #ece6e8; --accent: #ff6f9f; --deep: #d94f7c; --ok: #3f8a5f; --warn: #b9811f; --danger: #c43d3d; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 14px; line-height: 1.7; }
+  button, input, textarea { font: inherit; color: inherit; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px 14px 60px; }
+  header { display: flex; align-items: center; gap: 10px; }
+  header img { width: 34px; height: 34px; border-radius: 8px; }
+  header h1 { font-size: 17px; }
+  header .out { margin-left: auto; font-size: 12px; color: var(--sub); background: none; border: 0; text-decoration: underline; cursor: pointer; }
+  .login { margin-top: 40px; background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--line); }
+  .login p { color: var(--sub); font-size: 13px; }
+  .login input { width: 100%; margin-top: 12px; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+  .btn { display: inline-block; border: 0; border-radius: 999px; padding: 9px 16px; font-weight: 700; cursor: pointer; background: var(--ink); color: #fff; }
+  .btn.sub { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .btn.ok { background: var(--ok); }
+  .btn.warn { background: var(--warn); }
+  .btn.danger { background: var(--danger); }
+  .btn:disabled { opacity: .4; }
+  .tabs { display: flex; gap: 6px; margin-top: 18px; flex-wrap: wrap; }
+  .tab { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+  .tab[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
+  .count { margin-left: 4px; font-size: 11px; background: #fff; color: var(--deep); border-radius: 999px; padding: 0 6px; }
+  .card { margin-top: 14px; background: var(--card); border-radius: 16px; padding: 16px; border: 1px solid var(--line); }
+  .head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .badge { font-size: 11px; font-weight: 700; padding: 1px 9px; border-radius: 999px; background: #ffe3ec; color: var(--deep); }
+  .badge.gray { background: #eee; color: var(--sub); }
+  .badge.st-ok { background: #e3f3e9; color: var(--ok); }
+  .badge.st-removed, .badge.st-banned { background: #fbe9e9; color: var(--danger); }
+  .time { margin-left: auto; color: var(--sub); font-size: 12px; }
+  .meta { margin-top: 8px; font-size: 13px; color: var(--sub); }
+  .meta b { color: var(--ink); }
+  .reason { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: #fff7e8; font-size: 13px; }
+  .content { margin-top: 10px; border: 1px dashed var(--line); border-radius: 12px; padding: 10px; }
+  .content img { display: block; max-width: 100%; max-height: 360px; border-radius: 8px; margin-top: 6px; }
+  .content .text { white-space: pre-wrap; word-break: break-word; }
+  .content .gone { color: var(--sub); font-size: 12px; }
+  .note { width: 100%; margin-top: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .done { margin-top: 8px; font-size: 12px; color: var(--sub); }
+  .empty { margin-top: 30px; text-align: center; color: var(--sub); }
+  .err { margin-top: 12px; color: var(--danger); font-size: 13px; }
+  .hint { margin-top: 18px; font-size: 12px; color: var(--sub); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><img src="icon.png" alt=""><h1>推しとも日和 管理</h1><button class="out" id="out" hidden>合言葉を消す</button></header>
+
+  <div class="login" id="login" hidden>
+    <b>管理画面の合言葉</b>
+    <p>ダウンロード フォルダの「推しとも日和-管理の合言葉.txt」に書いてある合言葉を入れてください。この端末のブラウザーに覚えさせます。</p>
+    <input id="key" type="password" autocomplete="off" placeholder="合言葉">
+    <div style="margin-top:12px"><button class="btn" id="enter">開く</button></div>
+    <div class="err" id="loginErr"></div>
+  </div>
+
+  <div id="main" hidden>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="open" aria-selected="true">未対応<span class="count" id="openCount">0</span></button>
+      <button class="tab" role="tab" data-tab="done">対応済み</button>
+      <button class="tab" role="tab" data-tab="bans">利用停止中</button>
+      <button class="tab" id="reload" style="margin-left:auto">↻ 読み直す</button>
+    </div>
+    <div class="err" id="err"></div>
+    <div id="list"></div>
+    <p class="hint">「問題なし」：何もせず閉じる。「内容を消す」：その日記・写真・コメント・トークを消す。「利用を止める」：書いた人のグループへの書き込み（投稿・写真・コメント・トーク・♡・グループの作成や参加）を止める。同じ中身への通報はまとめて閉じます。</p>
+  </div>
+</div>
+
+<script>
+const FN = 'https://exsgqczdfxzgcivfkate.supabase.co/functions/v1/oshitecho-admin';
+const ANON = 'sb_publishable_mK0wqRDb_XpeT4Jj8eN8BA_hpUKACBl';
+const STORE = 'oshitomo-admin-key';
+const KIND = { post: '日記', photo: 'アルバムの写真', comment: 'コメント', message: 'トーク', user: 'メンバー' };
+const STATUS = { ok: '問題なし', removed: '内容を消した', banned: '利用を止めた' };
+const $ = (id) => document.getElementById(id);
+let key = null;
+let tab = 'open';
+try { key = localStorage.getItem(STORE); } catch {}
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const when = (s) => { if (!s) return ''; const d = new Date(s); return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`; };
+
+async function call(action, body = {}) {
+  const res = await fetch(FN, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: ANON, 'x-admin-key': key ?? '' },
+    body: JSON.stringify({ action, ...body }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (res.status === 401) { showLogin('合言葉が違います'); throw new Error('合言葉が違います'); }
+  if (!res.ok) throw new Error(json.error || `エラー（${res.status}）`);
+  return json;
+}
+
+function showLogin(msg = '') {
+  $('login').hidden = false; $('main').hidden = true; $('out').hidden = true; $('loginErr').textContent = msg;
+}
+function showMain() { $('login').hidden = true; $('main').hidden = false; $('out').hidden = false; }
+
+async function load() {
+  $('err').textContent = '';
+  $('list').innerHTML = '<p class="empty">読み込んでいます…</p>';
+  try {
+    if (tab === 'bans') return renderBans((await call('bans')).bans);
+    const r = await call('list', { status: tab });
+    $('openCount').textContent = r.open;
+    renderReports(r.reports);
+  } catch (e) {
+    $('list').innerHTML = '';
+    $('err').textContent = e.message;
+  }
+}
+
+function renderReports(list) {
+  if (!list.length) { $('list').innerHTML = `<p class="empty">${tab === 'open' ? '未対応の通報はありません' : '対応済みの通報はありません'}</p>`; return; }
+  $('list').innerHTML = list.map((r) => `
+    <div class="card" data-id="${r.id}">
+      <div class="head">
+        <span class="badge">${esc(KIND[r.kind] ?? r.kind)}</span>
+        ${r.same > 1 ? `<span class="badge gray">同じ中身への通報 ${r.same}件</span>` : ''}
+        ${r.status !== 'open' ? `<span class="badge st-${r.status}">${esc(STATUS[r.status])}</span>` : ''}
+        ${r.author?.banned ? '<span class="badge st-banned">書いた人は利用停止中</span>' : ''}
+        <span class="time">${when(r.createdAt)}</span>
+      </div>
+      <div class="meta">
+        ${r.group ? `グループ：<b>${esc(r.group.name)}</b>　` : ''}
+        ${r.author ? `${r.kind === 'user' ? '通報されたメンバー' : '書いた人'}：<b>${esc(r.author.name)}</b>　` : ''}
+        通報した人：${esc(r.reporter.name)}
+      </div>
+      ${r.reason ? `<div class="reason">理由：${esc(r.reason)}</div>` : ''}
+      ${r.kind === 'user' ? '' : `<div class="content">
+        ${r.deleted ? '<div class="gone">（この中身はもう消されています）</div>' : ''}
+        ${r.text ? `<div class="text">${esc(r.text)}</div>` : ''}
+        ${r.image ? `<a href="${esc(r.image)}" target="_blank" rel="noopener"><img src="${esc(r.image)}" alt="通報された画像"></a>` : ''}
+        ${!r.text && !r.image && !r.deleted ? '<div class="gone">（文字・画像なし）</div>' : ''}
+      </div>`}
+      ${r.status === 'open' ? `
+        <input class="note" placeholder="メモ（任意。何をしたか・理由）" maxlength="300">
+        <div class="acts">
+          <button class="btn ok" data-act="resolve">問題なし</button>
+          ${r.kind !== 'user' && !r.deleted ? '<button class="btn warn" data-act="remove">内容を消す</button>' : ''}
+          ${r.author && !r.author.banned ? `<button class="btn danger" data-act="ban">${r.kind !== 'user' && !r.deleted ? '消して利用を止める' : '利用を止める'}</button>` : ''}
+        </div>` : `<div class="done">${when(r.handledAt)} に対応${r.note ? `：${esc(r.note)}` : ''}</div>`}
+    </div>`).join('');
+}
+
+function renderBans(list) {
+  if (!list.length) { $('list').innerHTML = '<p class="empty">利用を止めている人はいません</p>'; return; }
+  $('list').innerHTML = list.map((b) => `
+    <div class="card">
+      <div class="head"><b>${esc(b.name)}</b><span class="time">${when(b.createdAt)} から</span></div>
+      ${b.reason ? `<div class="meta">${esc(b.reason)}</div>` : ''}
+      <div class="acts"><button class="btn sub" data-unban="${b.userId}">停止を解除する</button></div>
+    </div>`).join('');
+}
+
+$('list').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  if (btn.dataset.unban) {
+    if (!confirm('利用の停止を解除しますか？')) return;
+    btn.disabled = true;
+    try { await call('unban', { userId: btn.dataset.unban }); load(); } catch (err) { $('err').textContent = err.message; btn.disabled = false; }
+    return;
+  }
+  const act = btn.dataset.act;
+  if (!act) return;
+  const card = btn.closest('.card');
+  const note = card.querySelector('.note')?.value ?? '';
+  const ask = { resolve: '問題なしとして閉じますか？', remove: 'この中身を消しますか？（元に戻せません）', ban: '書いた人の利用を止めますか？' }[act];
+  if (!confirm(ask)) return;
+  card.querySelectorAll('button').forEach((b) => (b.disabled = true));
+  try {
+    await call(act, { id: card.dataset.id, note, remove: act === 'ban' });
+    load();
+  } catch (err) {
+    $('err').textContent = err.message;
+    card.querySelectorAll('button').forEach((b) => (b.disabled = false));
+  }
+});
+
+document.querySelectorAll('.tab[data-tab]').forEach((t) => t.addEventListener('click', () => {
+  tab = t.dataset.tab;
+  document.querySelectorAll('.tab[data-tab]').forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+  load();
+}));
+$('reload').addEventListener('click', load);
+$('enter').addEventListener('click', async () => {
+  key = $('key').value.trim();
+  if (!key) return;
+  try { await call('list', { status: 'open' }); } catch { return; }
+  try { localStorage.setItem(STORE, key); } catch {}
+  $('key').value = '';
+  showMain(); load();
+});
+$('key').addEventListener('keydown', (e) => e.key === 'Enter' && $('enter').click());
+$('out').addEventListener('click', () => {
+  if (!confirm('この端末から合言葉を消しますか？')) return;
+  try { localStorage.removeItem(STORE); } catch {}
+  key = null; showLogin();
+});
+
+if (key) { showMain(); load(); } else showLogin();
+</script>
+</body>
+</html>
