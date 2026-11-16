@@ -1,0 +1,84 @@
+/* 推しとも日和 公開ページ（アプリと同じ生成り色とピンク） */
+:root {
+  --bg: #f8f4ec;
+  --card: #ffffff;
+  --ink: #2b2630;
+  --sub: #8b8490;
+  --line: #ece6e8;
+  --accent: #ff6f9f;
+  --accent-deep: #d94f7c;
+  --soft: #fff1f5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  line-height: 1.8;
+}
+a { color: var(--accent-deep); }
+img { max-width: 100%; height: auto; }
+
+/* ヘッダー */
+.top { max-width: 760px; margin: 0 auto; padding: 18px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 18px; }
+.brand img { width: 36px; height: 36px; border-radius: 9px; }
+.top nav { margin-left: auto; display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; }
+.top nav a { color: var(--sub); text-decoration: none; }
+.top nav a[aria-current] { color: var(--ink); font-weight: 700; }
+
+/* 紹介ページ */
+.hero { max-width: 760px; margin: 0 auto; padding: 8px 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+.hero h1 { font-size: 30px; line-height: 1.5; }
+.hero h1 span { color: var(--accent-deep); }
+.hero .lead { color: var(--sub); margin-top: 14px; font-size: 15px; }
+.hero .art { border-radius: 24px; overflow: hidden; box-shadow: 0 12px 30px -16px rgba(80, 40, 60, 0.4); }
+.hero .art img { display: block; }
+.badges { margin-top: 20px; padding: 14px 16px; border-radius: 16px; background: var(--card); border: 1px dashed #f3b8cb; font-size: 13px; color: var(--sub); }
+.badges b { color: var(--ink); }
+
+.section { max-width: 760px; margin: 0 auto; padding: 40px 20px 0; }
+.section h2 { font-size: 20px; text-align: center; }
+.section h2::after { content: ''; display: block; width: 36px; height: 3px; border-radius: 2px; background: var(--accent); margin: 10px auto 0; }
+.features { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+.feature { background: var(--card); border-radius: 18px; padding: 18px; border: 1px solid var(--line); }
+.feature .em { font-size: 26px; line-height: 1; }
+.feature h3 { font-size: 16px; margin-top: 10px; }
+.feature p { font-size: 13px; color: var(--sub); margin-top: 6px; line-height: 1.75; }
+.safe { margin-top: 22px; background: var(--soft); border-radius: 18px; padding: 18px 20px; }
+.safe li { font-size: 14px; margin-left: 1.2em; line-height: 1.9; }
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
+.plan { background: var(--card); border-radius: 18px; padding: 18px; border: 1px solid var(--line); }
+.plan.paid { border: 2px solid var(--accent); }
+.plan h3 { font-size: 16px; }
+.plan .price { font-size: 13px; color: var(--sub); }
+.plan ul { margin-top: 8px; }
+.plan li { font-size: 13px; margin-left: 1.2em; line-height: 1.9; }
+
+/* 読み物のページ（規約・プライバシー・お問い合わせ） */
+.doc { max-width: 760px; margin: 0 auto; padding: 8px 20px 0; }
+.doc h1 { font-size: 26px; margin-top: 12px; }
+.doc h2 { font-size: 16px; margin-top: 30px; padding-left: 10px; border-left: 4px solid var(--accent); line-height: 1.5; }
+.doc p, .doc li { font-size: 14px; line-height: 1.95; }
+.doc p { margin-top: 10px; }
+.doc ol, .doc ul { padding-left: 1.4em; margin-top: 8px; }
+.doc b { color: var(--ink); }
+.doc .wide { overflow-x: auto; margin-top: 12px; }
+.doc table { border-collapse: collapse; width: 100%; min-width: 540px; background: var(--card); }
+.doc th, .doc td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; font-size: 13px; line-height: 1.7; }
+.doc th { color: var(--sub); font-weight: 700; background: #fcfafa; }
+.doc .card { margin-top: 12px; padding: 16px 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
+.doc .card p { margin-top: 4px; font-size: 13px; color: #5d5662; }
+.doc .card ul { font-size: 13px; }
+.doc .note { color: var(--sub); font-size: 12px; margin-top: 28px; line-height: 1.8; }
+
+footer { max-width: 760px; margin: 48px auto 0; padding: 20px 20px 36px; border-top: 1px solid var(--line); font-size: 12px; color: var(--sub); text-align: center; line-height: 2; }
+footer a { color: var(--sub); margin: 0 6px; }
+
+@media (max-width: 640px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero .art { max-width: 320px; margin: 0 auto; }
+  .hero h1 { font-size: 25px; }
+  .features, .plans { grid-template-columns: 1fr; }
+}
